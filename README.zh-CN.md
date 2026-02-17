@@ -4,23 +4,6 @@ English version: [README.md](README.md)
 
 这是一个基于 Go 的 Telegram 文本验证与 brainstorming 技能打包项目。
 
-### 生成与许可声明
-
-- 本项目整体代码由 `Codex: GPT-5.3-Codex` 生成。
-- 本项目采用 `MIT` 许可证。
-
-### 主要内容
-
-- `cmd/telegram-echo-test`：向 Telegram 发送挑战消息并校验回包是否一致。
-- `cmd/telegram-brainstorming`：单轮 prompt->reply 桥接器（传入一段 A/B/C 文本到 Telegram，等待一条回复并输出结果）。
-- `skills/telegram-brainstorming/`：生产版 skill 文档（英文）与中文对照。
-- `instruction_for_AI.md`：指导 AI 构建、打包、安装完整 skill。
-
-### 平台支持
-
-- 仅支持：Linux `amd64` / `arm64`
-- 暂不支持：Windows / macOS
-
 ### 快速开始
 
 1. 安装 Go（建议 `1.25+`）并确认可用：
@@ -56,6 +39,23 @@ scripts/run_telegram_echo_test.sh
 - 让 AI 读取 `instruction_for_AI.md`
 - 示例提示词：`请你参照 instruction_for_AI.md 这个文档来尝试安装`
 
+### 生成与许可声明
+
+- 本项目整体代码由 `Codex: GPT-5.3-Codex` 生成。
+- 本项目采用 `MIT` 许可证。
+
+### 主要内容
+
+- `cmd/telegram-echo-test`：向 Telegram 发送挑战消息并校验回包是否一致。
+- `cmd/telegram-brainstorming`：单轮 prompt->reply 桥接器（传入一段 A/B/C 文本到 Telegram，等待一条回复并输出结果）。
+- `skills/telegram-brainstorming/`：生产版 skill 文档（英文）与中文对照。
+- `instruction_for_AI.md`：指导 AI 构建、打包、安装完整 skill。
+
+### 平台支持
+
+- 仅支持：Linux `amd64` / `arm64`
+- 暂不支持：Windows / macOS
+
 ### 常用命令（开发/调试）
 
 ```bash
@@ -79,3 +79,8 @@ mkdir -p build
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-brainstorming
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-brainstorming
 ```
+
+### 致谢
+
+感谢大家使用本项目！🎉🙏  
+如果遇到任何问题，欢迎提交 issue，并尽量附上复现步骤与日志信息。🐛🧪🛠️🚀
