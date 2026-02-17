@@ -97,16 +97,24 @@ tar -C ~/.codex/skills -xzf dist/telegram-brainstorming.tar.gz
 The remove-and-extract sequence is mandatory for update/reinstall. It guarantees complete overwrite of:
 - `SKILL.md` and `SKILL.zh-CN.md`
 - all binaries under `bin/`
-- `bin/.env`, `bin/.env.example`, and `bin/.env.examples`
+- `bin/.env`, `bin/.env.example`
 
 ## Validation Checklist
 
 - `SKILL.md` exists in installed skill root
 - `SKILL.zh-CN.md` exists in installed skill root
 - both Linux binaries exist in `bin/`
-- `bin/.env`, `bin/.env.example`, and `bin/.env.examples` exist
+- `bin/.env`, `bin/.env.example` exist
 - binaries are executable
 - unsupported platform message is documented in `SKILL.md`
+
+## Binary Runtime Contract
+
+Installed `telegram-brainstorming` binaries must follow this contract:
+- Input: one prompt string per invocation (`--prompt "..."` or positional text).
+- Behavior: send prompt to Telegram chat and wait for one reply.
+- Output: print only the received reply text to `stdout`.
+- Logging: terminal status logs must not include prompt body.
 
 ## Important Runtime Note
 

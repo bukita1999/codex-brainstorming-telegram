@@ -12,7 +12,7 @@
 ### 主要内容
 
 - `cmd/telegram-echo-test`：向 Telegram 发送挑战消息并校验回包是否一致。
-- `cmd/telegram-brainstorming`：通过 Telegram 进行一轮 brainstorming（问题仅发 Telegram，终端仅显示状态）。
+- `cmd/telegram-brainstorming`：单轮 prompt->reply 桥接器（传入一段 A/B/C 文本到 Telegram，等待一条回复并输出结果）。
 - `skills/telegram-brainstorming/`：生产版 skill 文档（英文）与中文对照。
 - `instruction_for_AI.md`：指导 AI 构建、打包、安装完整 skill。
 
@@ -38,8 +38,11 @@
 # 运行 Telegram 回环测试
 scripts/run_telegram_echo_test.sh
 
-# 运行 Telegram brainstorming 会话
-GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env
+# 运行单轮 Telegram brainstorming（--prompt 方式）
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "请选择方案：A) 稳健 B) 平衡 C) 激进。请回复 A/B/C 或补充说明。"
+
+# 运行单轮 Telegram brainstorming（位置参数方式）
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env "请选择方案：A) 稳健 B) 平衡 C) 激进。请回复 A/B/C 或补充说明。"
 
 # 全量测试
 GOCACHE=/tmp/go-build go test ./...
@@ -64,7 +67,7 @@ This is a Go-based project for Telegram text-path verification and brainstorming
 ### What is included
 
 - `cmd/telegram-echo-test`: sends a challenge message to Telegram and verifies reply integrity.
-- `cmd/telegram-brainstorming`: runs one brainstorming cycle through Telegram (questions in Telegram only, terminal shows status only).
+- `cmd/telegram-brainstorming`: a single-round prompt->reply bridge (send long A/B/C prompt text to Telegram, wait for one reply, return reply text).
 - `skills/telegram-brainstorming/`: production skill docs (English) plus Chinese reference.
 - `instruction_for_AI.md`: instructions for AI to build, package, and install the full skill.
 
@@ -90,8 +93,11 @@ If `.env` is missing, the program prints an actionable hint to create it from `.
 # Run Telegram echo test
 scripts/run_telegram_echo_test.sh
 
-# Run Telegram brainstorming session
-GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env
+# Run single-round Telegram brainstorming (--prompt)
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "Choose one: A) Conservative B) Balanced C) Aggressive. Reply with A/B/C or short notes."
+
+# Run single-round Telegram brainstorming (positional prompt)
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env "Choose one: A) Conservative B) Balanced C) Aggressive. Reply with A/B/C or short notes."
 
 # Run all tests
 GOCACHE=/tmp/go-build go test ./...

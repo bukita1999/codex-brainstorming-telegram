@@ -52,19 +52,25 @@ Binary selection rule:
 3. Validate `.env` existence in `bin/`.
 4. Validate `.env.examples` existence in `bin/` (if only `.env.example` exists, mirror it as `.env.examples`).
 5. If `.env` is missing, print a clear instruction to create it from `.env.example` and stop.
-6. Execute binary in text-only Telegram mode.
+6. Execute binary in text-only Telegram mode with one prompt argument per invocation.
 7. All brainstorming questions must be delivered in Telegram chat only.
 8. Terminal output must contain status only (for example: running/waiting/completed), and must not print question bodies.
 
+## Binary I/O Contract
+
+- Input: pass one full prompt string to the binary (may include long A/B/C options).
+- Prompt content must be sent to Telegram only, never echoed in terminal.
+- Output: binary returns the received Telegram reply as `stdout` text.
+- Status logs must go to terminal status stream only, without prompt body.
+- Use one binary invocation per question round.
+
 ## Brainstorming Interaction Rules
 
-- Ask exactly one question per message.
-- Prefer 2-3 numbered options (`1/2/3`) before open-ended prompts.
-- Accept either option number or short text.
-- Continue until purpose, constraints, and success criteria are explicit.
-- Never render brainstorming question text in terminal.
-- Use concise prompt ending:
-  - `请回复 1/2/3，或直接输入你的说明。`
+- Skill side builds each question prompt (single question per round).
+- Prefer options-first prompts (A/B/C or `1/2/3`) plus short free-text fallback.
+- Binary waits for one reply and returns it to the caller.
+- Caller decides next question based on returned reply.
+- Continue rounds until purpose, constraints, and success criteria are explicit.
 
 ## Network and Proxy
 
@@ -86,4 +92,5 @@ This skill is production-ready only when:
 - The correct Linux binary is selected and runs from `bin/`.
 - Unsupported platforms are blocked with the required message.
 - Missing `.env` produces an actionable setup error.
-- A full Telegram text conversation can complete one brainstorming cycle.
+- Prompt text appears only in Telegram, not terminal.
+- One binary invocation can complete one ask/reply round and return reply text.

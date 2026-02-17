@@ -16,6 +16,9 @@ bin/
 build/
 dist/
 release/
+telegram-brainstorming
+telegram-echo-test
+virtual-codex
 skills/**/bin/telegram-brainstorming-linux-amd64
 skills/**/bin/telegram-brainstorming-linux-arm64
 

@@ -3,7 +3,6 @@ package telegrambrainstorm
 import (
 	"context"
 	"errors"
-	"strings"
 	"testing"
 	"time"
 
@@ -30,68 +29,55 @@ func (f *fakeAPI) GetUpdates(_ context.Context, _ int64, _ int) ([]telegramapi.U
 	return out, nil
 }
 
-func TestRunSessionSuccess(t *testing.T) {
+func TestRunPromptSuccess(t *testing.T) {
 	t.Parallel()
 
 	u1 := telegramapi.Update{UpdateID: 2}
 	u1.Message.Chat.ID = 1001
-	u1.Message.Text = "1"
-
-	u2 := telegramapi.Update{UpdateID: 3}
-	u2.Message.Chat.ID = 1001
-	u2.Message.Text = "性能和稳定性优先"
-
-	u3 := telegramapi.Update{UpdateID: 4}
-	u3.Message.Chat.ID = 1001
-	u3.Message.Text = "3"
+	u1.Message.Text = "B"
 
 	api := &fakeAPI{
 		polls: [][]telegramapi.Update{
 			nil,
 			{u1},
-			{u2},
-			{u3},
 		},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	result, err := RunSession(ctx, api, "1001", 2*time.Second)
+	prompt := "请选择方案：\nA) 低风险\nB) 平衡\nC) 激进\n请回复 A/B/C。"
+	result, err := RunPrompt(ctx, api, "1001", prompt, 2*time.Second)
 	if err != nil {
-		t.Fatalf("RunSession() error = %v", err)
+		t.Fatalf("RunPrompt() error = %v", err)
 	}
 
-	if len(result.Answers) != 3 {
-		t.Fatalf("len(result.Answers) = %d, want 3", len(result.Answers))
+	if got, want := result.RawReply, "B"; got != want {
+		t.Fatalf("result.RawReply = %q, want %q", got, want)
 	}
-	if got := result.Answers[0].AnswerText; !strings.Contains(got, "新用户") {
-		t.Fatalf("first answer = %q, want normalized option text", got)
+	if got, want := result.NormalizedReply, "B"; got != want {
+		t.Fatalf("result.NormalizedReply = %q, want %q", got, want)
 	}
-	if got := result.Answers[2].AnswerText; !strings.Contains(got, "验证") {
-		t.Fatalf("third answer = %q, want normalized option text", got)
+	if len(api.sentText) != 1 {
+		t.Fatalf("sent count = %d, want 1", len(api.sentText))
 	}
-
-	if len(api.sentText) < 5 {
-		t.Fatalf("sent count = %d, want at least 5", len(api.sentText))
-	}
-	if !strings.Contains(api.sentText[1], "请回复 1/2/3，或直接输入你的说明。") {
-		t.Fatalf("question message missing reply hint: %q", api.sentText[1])
+	if got := api.sentText[0]; got != prompt {
+		t.Fatalf("sent prompt = %q, want %q", got, prompt)
 	}
 }
 
-func TestRunSessionTimeout(t *testing.T) {
+func TestRunPromptTimeout(t *testing.T) {
 	t.Parallel()
 
 	api := &fakeAPI{polls: [][]telegramapi.Update{nil, nil, nil}}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	_, err := RunSession(ctx, api, "1001", 20*time.Millisecond)
+	_, err := RunPrompt(ctx, api, "1001", "A/B/C?", 20*time.Millisecond)
 	if err == nil {
-		t.Fatal("RunSession() error = nil, want timeout error")
+		t.Fatal("RunPrompt() error = nil, want timeout error")
 	}
 	if !errors.Is(err, ErrSessionTimeout) {
-		t.Fatalf("RunSession() error = %v, want %v", err, ErrSessionTimeout)
+		t.Fatalf("RunPrompt() error = %v, want %v", err, ErrSessionTimeout)
 	}
 }

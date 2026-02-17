@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"codex-brainstorming-telegram/internal/config"
@@ -16,15 +17,15 @@ import (
 	"codex-brainstorming-telegram/internal/telegrambrainstorm"
 )
 
-type sessionAPI interface {
+type promptAPI interface {
 	SendMessage(ctx context.Context, chatID string, text string) (int64, error)
 	GetUpdates(ctx context.Context, offset int64, timeoutSec int) ([]telegramapi.Update, error)
 }
 
-type sessionResult = telegrambrainstorm.SessionResult
+type promptResult = telegrambrainstorm.PromptResult
 
-var runSession = func(ctx context.Context, api sessionAPI, chatID string, timeout time.Duration) (sessionResult, error) {
-	return telegrambrainstorm.RunSession(ctx, api, chatID, timeout)
+var runPrompt = func(ctx context.Context, api promptAPI, chatID string, prompt string, timeout time.Duration) (promptResult, error) {
+	return telegrambrainstorm.RunPrompt(ctx, api, chatID, prompt, timeout)
 }
 
 func main() {
@@ -38,6 +39,7 @@ func run(parent context.Context, stdout io.Writer, stderr io.Writer, args []stri
 	envPath := fs.String("env", ".env", "path to .env file")
 	apiBase := fs.String("api-base", "https://api.telegram.org", "telegram API base URL")
 	overrideTimeout := fs.Duration("session-timeout", 0, "override TELEGRAM_REPLY_TIMEOUT")
+	promptFlag := fs.String("prompt", "", "prompt text to send to Telegram")
 
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -56,6 +58,12 @@ func run(parent context.Context, stdout io.Writer, stderr io.Writer, args []stri
 		cfg.ReplyTimeout = *overrideTimeout
 	}
 
+	promptText, err := buildPromptText(*promptFlag, fs.Args())
+	if err != nil {
+		fmt.Fprintln(stderr, err)
+		return 2
+	}
+
 	httpClient, err := buildHTTPClient(cfg.ProxyURL)
 	if err != nil {
 		fmt.Fprintf(stderr, "proxy config error: %v\n", err)
@@ -64,13 +72,14 @@ func run(parent context.Context, stdout io.Writer, stderr io.Writer, args []stri
 
 	apiClient := telegramapi.NewClient(*apiBase, cfg.BotToken, httpClient)
 
-	fmt.Fprintln(stdout, "程序正在运行中，请前往 Telegram 完成 brainstorming 对话。")
-	fmt.Fprintln(stdout, "终端仅显示运行状态，不显示提问内容。")
+	fmt.Fprintln(stderr, "程序正在运行中，请前往 Telegram 查看并回复。")
+	fmt.Fprintln(stderr, "终端仅显示运行状态，不显示提问内容。")
 
 	ctx, cancel := context.WithTimeout(parent, cfg.ReplyTimeout+30*time.Second)
 	defer cancel()
 
-	if _, err := runSession(ctx, apiClient, cfg.ChatID, cfg.ReplyTimeout); err != nil {
+	result, err := runPrompt(ctx, apiClient, cfg.ChatID, promptText, cfg.ReplyTimeout)
+	if err != nil {
 		if errors.Is(err, telegrambrainstorm.ErrSessionTimeout) {
 			fmt.Fprintln(stderr, "会话超时：未在规定时间内完成 Telegram 对话")
 			return 1
@@ -79,8 +88,25 @@ func run(parent context.Context, stdout io.Writer, stderr io.Writer, args []stri
 		return 1
 	}
 
-	fmt.Fprintln(stdout, "会话完成：结果已发送到 Telegram。")
+	fmt.Fprintln(stderr, "会话完成：已收到 Telegram 回复。")
+	fmt.Fprintln(stdout, result.NormalizedReply)
 	return 0
+}
+
+func buildPromptText(promptFlag string, positional []string) (string, error) {
+	fromFlag := strings.TrimSpace(promptFlag)
+	fromPositional := strings.TrimSpace(strings.Join(positional, " "))
+
+	switch {
+	case fromFlag != "" && fromPositional != "":
+		return "", errors.New("use either --prompt or positional prompt, not both")
+	case fromFlag != "":
+		return fromFlag, nil
+	case fromPositional != "":
+		return fromPositional, nil
+	default:
+		return "", errors.New("prompt is required: pass --prompt \"...\" or provide positional text")
+	}
 }
 
 func buildHTTPClient(proxyURL string) (*http.Client, error) {

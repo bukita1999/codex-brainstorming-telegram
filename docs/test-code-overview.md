@@ -18,10 +18,11 @@
   - 错误信息包含 `.env.example` 以及“创建对应的 `.env` 文件”的引导文案。
 
 ### `cmd/telegram-brainstorming/main_test.go`
-- 验证 `telegram-brainstorming` CLI 的运行模式是否符合“Telegram 交互优先”要求。
+- 验证 `telegram-brainstorming` CLI 的运行模式是否符合“单轮 prompt->reply”要求。
 - 主要覆盖：
   - `.env` 缺失时返回可操作错误（包含 `.env.example` 提示）。
-  - 正常运行时，终端只打印运行状态，不打印 brainstorming 问题正文。
+  - 未传入 prompt 时返回参数错误（退出码 `2`）。
+  - 正常运行时：状态输出不包含 prompt 正文，`stdout` 仅返回 Telegram 回复文本。
 
 ### `internal/config/dotenv_test.go`
 - 验证配置加载逻辑 `LoadTelegramConfig()`。
@@ -60,11 +61,11 @@
   - 超时路径：在指定时限内未收到匹配回复时返回 `ErrChallengeTimeout`。
 
 ### `internal/telegrambrainstorm/runner_test.go`
-- 验证 Telegram brainstorming 会话编排逻辑（使用 fake API）。
+- 验证 Telegram 单轮问答编排逻辑（使用 fake API）。
 - 主要覆盖：
-  - 成功路径：发送开场消息与逐题提问，接收用户回复后继续下一题，最终发送摘要。
-  - 选项编号回复会被规范化为选项文本（例如 `1` 映射为具体描述）。
-  - 超时路径：在时限内未完成会话时返回 `ErrSessionTimeout`。
+  - 成功路径：发送一条传入 prompt，收到第一条有效回复后立即返回。
+  - 返回值包含 `RawReply` 与 `NormalizedReply`。
+  - 超时路径：在时限内未收到有效回复时返回 `ErrSessionTimeout`。
 
 ## 2. 手工联调脚本
 
@@ -76,11 +77,11 @@
   - 允许把额外参数透传给主程序，便于你本地联调。
 
 ### `scripts/run_telegram_brainstorming.sh`
-- 这是“Telegram brainstorming 手工联调入口脚本”，不是单元测试。
+- 这是“Telegram 单轮问答手工联调入口脚本”，不是单元测试。
 - 作用：
   - 切换到仓库根目录。
-  - 以 `go run ./cmd/telegram-brainstorming --env .env` 方式启动会话程序。
-  - 会话问题发送到 Telegram，终端仅显示运行状态。
+  - 以 `go run ./cmd/telegram-brainstorming --env .env "$@"` 方式启动程序。
+  - 每次调用传入一条 prompt 到 Telegram，等待一条回复后返回。
 
 ## 3. 当前测试覆盖的重点与边界
 
