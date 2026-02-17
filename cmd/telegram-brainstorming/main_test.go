@@ -97,3 +97,38 @@ func TestRunPositionalPromptAndReplyOnlyOutput(t *testing.T) {
 		t.Fatalf("stderr should not include prompt text: %q", status)
 	}
 }
+
+func TestRunPromptFlagUnescapesNewlineSequence(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+	envPath := filepath.Join(tmpDir, ".env")
+	content := "TELEGRAM_BOT_TOKEN=token\nTELEGRAM_CHAT_ID=123\nTELEGRAM_REPLY_TIMEOUT=1m\n"
+	if err := os.WriteFile(envPath, []byte(content), 0o600); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	escapedPrompt := `请选择方案：\nA) 稳健\nB) 平衡\nC) 激进\n请回复 A/B/C。`
+	expectedPrompt := "请选择方案：\nA) 稳健\nB) 平衡\nC) 激进\n请回复 A/B/C。"
+
+	orig := runPrompt
+	runPrompt = func(ctx context.Context, _ promptAPI, chatID string, prompt string, timeout time.Duration) (promptResult, error) {
+		if prompt != expectedPrompt {
+			t.Fatalf("prompt = %q, want %q", prompt, expectedPrompt)
+		}
+		return promptResult{
+			RawReply:        "A",
+			NormalizedReply: "A",
+		}, nil
+	}
+	t.Cleanup(func() {
+		runPrompt = orig
+	})
+
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	exitCode := run(context.Background(), &stdout, &stderr, []string{"--env", envPath, "--prompt", escapedPrompt})
+	if exitCode != 0 {
+		t.Fatalf("run() exitCode = %d, stderr = %s", exitCode, stderr.String())
+	}
+}

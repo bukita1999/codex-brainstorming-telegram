@@ -44,6 +44,9 @@ GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "�
 # 运行单轮 Telegram brainstorming（位置参数方式）
 GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env "请选择方案：A) 稳健 B) 平衡 C) 激进。请回复 A/B/C 或补充说明。"
 
+# 运行单轮 Telegram brainstorming（\n 会被解释为真实换行）
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "请选择方案：\nA) 稳健\nB) 平衡\nC) 激进\n请回复 A/B/C。"
+
 # 全量测试
 GOCACHE=/tmp/go-build go test ./...
 
@@ -98,6 +101,9 @@ GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "C
 
 # Run single-round Telegram brainstorming (positional prompt)
 GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env "Choose one: A) Conservative B) Balanced C) Aggressive. Reply with A/B/C or short notes."
+
+# Run single-round Telegram brainstorming (\n is converted to real line breaks)
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "Choose one:\nA) Conservative\nB) Balanced\nC) Aggressive\nReply with A/B/C."
 
 # Run all tests
 GOCACHE=/tmp/go-build go test ./...

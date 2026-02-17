@@ -101,12 +101,45 @@ func buildPromptText(promptFlag string, positional []string) (string, error) {
 	case fromFlag != "" && fromPositional != "":
 		return "", errors.New("use either --prompt or positional prompt, not both")
 	case fromFlag != "":
-		return fromFlag, nil
+		return unescapePromptText(fromFlag), nil
 	case fromPositional != "":
-		return fromPositional, nil
+		return unescapePromptText(fromPositional), nil
 	default:
 		return "", errors.New("prompt is required: pass --prompt \"...\" or provide positional text")
 	}
+}
+
+func unescapePromptText(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		if ch != '\\' || i+1 >= len(s) {
+			b.WriteByte(ch)
+			continue
+		}
+
+		switch s[i+1] {
+		case 'n':
+			b.WriteByte('\n')
+			i++
+		case 'r':
+			b.WriteByte('\r')
+			i++
+		case 't':
+			b.WriteByte('\t')
+			i++
+		case '\\':
+			b.WriteByte('\\')
+			i++
+		default:
+			// Keep unknown escape sequences unchanged.
+			b.WriteByte('\\')
+		}
+	}
+
+	return b.String()
 }
 
 func buildHTTPClient(proxyURL string) (*http.Client, error) {

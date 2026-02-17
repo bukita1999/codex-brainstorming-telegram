@@ -7,7 +7,7 @@ description: Use when the user explicitly requests brainstorming through Telegra
 
 ## Purpose
 
-Run the brainstorming workflow through Telegram while preserving core discipline from `brainstorming`: one question per turn, option-first prompts, and progressive requirement clarification.
+Run the full pre-execution collaboration workflow through Telegram: one question per turn, option-first prompts, progressive requirement clarification, plan proposal, and execution confirmation.
 
 This production version is binary-driven: the skill calls packaged Linux binaries from its own `bin/` folder.
 
@@ -53,8 +53,9 @@ Binary selection rule:
 4. Validate `.env.examples` existence in `bin/` (if only `.env.example` exists, mirror it as `.env.examples`).
 5. If `.env` is missing, print a clear instruction to create it from `.env.example` and stop.
 6. Execute binary in text-only Telegram mode with one prompt argument per invocation.
-7. All brainstorming questions must be delivered in Telegram chat only.
-8. Terminal output must contain status only (for example: running/waiting/completed), and must not print question bodies.
+7. All user-facing interaction content must be delivered in Telegram chat only.
+8. This includes option prompts, clarification questions, full plan descriptions, and pre-execution confirmation requests.
+9. Terminal output must contain status only (for example: running/waiting/completed), and must not print question or plan bodies.
 
 ## Binary I/O Contract
 
@@ -64,13 +65,16 @@ Binary selection rule:
 - Status logs must go to terminal status stream only, without prompt body.
 - Use one binary invocation per question round.
 
-## Brainstorming Interaction Rules
+## Embedded Collaboration Rules
 
 - Skill side builds each question prompt (single question per round).
 - Prefer options-first prompts (A/B/C or `1/2/3`) plus short free-text fallback.
 - Binary waits for one reply and returns it to the caller.
 - Caller decides next question based on returned reply.
 - Continue rounds until purpose, constraints, and success criteria are explicit.
+- Before any implementation command, send a full execution plan to Telegram and ask whether to proceed.
+- Only execute when explicit approval is received in Telegram.
+- If approval is missing or unclear, continue Telegram clarification and do not start execution.
 
 ## Network and Proxy
 
@@ -94,3 +98,4 @@ This skill is production-ready only when:
 - Missing `.env` produces an actionable setup error.
 - Prompt text appears only in Telegram, not terminal.
 - One binary invocation can complete one ask/reply round and return reply text.
+- Plan-to-execution confirmation is completed in Telegram, and terminal never becomes the decision channel.

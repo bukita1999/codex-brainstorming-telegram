@@ -116,6 +116,15 @@ Installed `telegram-brainstorming` binaries must follow this contract:
 - Output: print only the received reply text to `stdout`.
 - Logging: terminal status logs must not include prompt body.
 
+## Skill Behavior Contract (Telegram-Only Interaction)
+
+The installed skill must keep all decision interaction in Telegram, not terminal:
+- option selection prompts are sent in Telegram
+- clarification and tradeoff questions are sent in Telegram
+- full execution-plan proposal is sent in Telegram
+- pre-execution confirmation ("shall we execute this plan?") is sent in Telegram
+- terminal output remains status-only and must not become a decision channel
+
 ## Important Runtime Note
 
 If `.env` is missing at runtime, the program must print an actionable message telling the user to create `.env` from `.env.example`.
