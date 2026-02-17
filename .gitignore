@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.*.local
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binaries / release output
+bin/
+dist/
+release/
+
+# Go tooling caches
+.coverprofile
+coverage.out
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Temporary files
+tmp/
+*.log
