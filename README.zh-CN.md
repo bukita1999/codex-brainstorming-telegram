@@ -6,13 +6,20 @@ English version: [README.md](README.md)
 
 ### 快速开始
 
-1. 安装 Go（建议 `1.25+`）并确认可用：
+1. 克隆仓库：
+
+```bash
+git clone https://github.com/bukita1999/codex-brainstorming-telegram.git
+cd codex-brainstorming-telegram
+```
+
+2. 安装 Go（建议 `1.25+`）并确认可用：
 
 ```bash
 go version
 ```
 
-2. 基于 `.env.example` 创建 `.env`，并填写 Telegram 参数：
+3. 基于 `.env.example` 创建 `.env`，并填写 Telegram 参数：
 
 ```bash
 cp .env.example .env
@@ -28,13 +35,13 @@ cp .env.example .env
 
 如果 `.env` 不存在，程序会提示你根据 `.env.example` 创建。
 
-3. 先跑一次连通性测试（手动在 Telegram 回复相同六位数字）：
+4. 先跑一次连通性测试（手动在 Telegram 回复相同六位数字）：
 
 ```bash
 scripts/run_telegram_echo_test.sh
 ```
 
-4. 用你的 AI Agent 安装 skill（如 `Codex` / `Claude Code` / `Opencode`）：
+5. 用你的 AI Agent 安装 skill（如 `Codex` / `Claude Code` / `Opencode`）：
 
 - 让 AI 读取 `instruction_for_AI.md`
 - 示例提示词：`请你参照 instruction_for_AI.md 这个文档来尝试安装`

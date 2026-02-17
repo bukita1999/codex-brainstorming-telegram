@@ -6,13 +6,20 @@ This project solves a practical workflow problem: the brainstorming skill is use
 
 ### Quickstart
 
-1. Install Go (recommended `1.25+`) and verify:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/bukita1999/codex-brainstorming-telegram.git
+cd codex-brainstorming-telegram
+```
+
+2. Install Go (recommended `1.25+`) and verify:
 
 ```bash
 go version
 ```
 
-2. Create `.env` from `.env.example`, then fill Telegram settings:
+3. Create `.env` from `.env.example`, then fill Telegram settings:
 
 ```bash
 cp .env.example .env
@@ -28,13 +35,13 @@ Optional:
 
 If `.env` is missing, the program prints an actionable hint to create it from `.env.example`.
 
-3. Run one connectivity/integrity check first (manually reply with the same 6-digit code in Telegram):
+4. Run one connectivity/integrity check first (manually reply with the same 6-digit code in Telegram):
 
 ```bash
 scripts/run_telegram_echo_test.sh
 ```
 
-4. Install the skill through your AI agent (`Codex` / `Claude Code` / `Opencode`):
+5. Install the skill through your AI agent (`Codex` / `Claude Code` / `Opencode`):
 
 - ask the agent to read `instruction_for_AI.md`
 - example prompt: `Please follow instruction_for_AI.md to install this skill.`
