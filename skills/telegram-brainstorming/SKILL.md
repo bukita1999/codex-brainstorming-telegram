@@ -53,6 +53,8 @@ Binary selection rule:
 4. Validate `.env.examples` existence in `bin/` (if only `.env.example` exists, mirror it as `.env.examples`).
 5. If `.env` is missing, print a clear instruction to create it from `.env.example` and stop.
 6. Execute binary in text-only Telegram mode.
+7. All brainstorming questions must be delivered in Telegram chat only.
+8. Terminal output must contain status only (for example: running/waiting/completed), and must not print question bodies.
 
 ## Brainstorming Interaction Rules
 
@@ -60,6 +62,7 @@ Binary selection rule:
 - Prefer 2-3 numbered options (`1/2/3`) before open-ended prompts.
 - Accept either option number or short text.
 - Continue until purpose, constraints, and success criteria are explicit.
+- Never render brainstorming question text in terminal.
 - Use concise prompt ending:
   - `请回复 1/2/3，或直接输入你的说明。`
 

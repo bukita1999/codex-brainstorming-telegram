@@ -53,6 +53,8 @@ telegram-brainstorming/
 4. 检查 `bin/.env.examples` 是否存在（若仅有 `.env.example`，需同步生成 `.env.examples` 别名）。
 5. 若 `.env` 缺失，明确提示根据 `.env.example` 创建 `.env`，并停止。
 6. 以 Telegram 文本模式执行二进制。
+7. brainstorming 的所有提问必须只在 Telegram 对话中发送。
+8. 终端只能显示运行状态（运行中/等待中/已完成），不得打印提问正文。
 
 ## 交互规则（继承 brainstorming）
 
@@ -60,6 +62,7 @@ telegram-brainstorming/
 - 优先给 2-3 个编号选项（`1/2/3`），再开放输入。
 - 用户回复可以是编号或短文本。
 - 直到目标、约束、成功标准全部明确才收敛。
+- 不得在终端渲染 brainstorming 提问文本。
 - 建议统一结尾：
   - `请回复 1/2/3，或直接输入你的说明。`
 

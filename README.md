@@ -12,6 +12,7 @@
 ### 主要内容
 
 - `cmd/telegram-echo-test`：向 Telegram 发送挑战消息并校验回包是否一致。
+- `cmd/telegram-brainstorming`：通过 Telegram 进行一轮 brainstorming（问题仅发 Telegram，终端仅显示状态）。
 - `skills/telegram-brainstorming/`：生产版 skill 文档（英文）与中文对照。
 - `instruction_for_AI.md`：指导 AI 构建、打包、安装完整 skill。
 
@@ -37,13 +38,16 @@
 # 运行 Telegram 回环测试
 scripts/run_telegram_echo_test.sh
 
+# 运行 Telegram brainstorming 会话
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env
+
 # 全量测试
 GOCACHE=/tmp/go-build go test ./...
 
 # 构建 Linux 二进制
 mkdir -p build
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-echo-test
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-echo-test
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-brainstorming
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-brainstorming
 ```
 
 ---
@@ -60,6 +64,7 @@ This is a Go-based project for Telegram text-path verification and brainstorming
 ### What is included
 
 - `cmd/telegram-echo-test`: sends a challenge message to Telegram and verifies reply integrity.
+- `cmd/telegram-brainstorming`: runs one brainstorming cycle through Telegram (questions in Telegram only, terminal shows status only).
 - `skills/telegram-brainstorming/`: production skill docs (English) plus Chinese reference.
 - `instruction_for_AI.md`: instructions for AI to build, package, and install the full skill.
 
@@ -85,11 +90,14 @@ If `.env` is missing, the program prints an actionable hint to create it from `.
 # Run Telegram echo test
 scripts/run_telegram_echo_test.sh
 
+# Run Telegram brainstorming session
+GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env
+
 # Run all tests
 GOCACHE=/tmp/go-build go test ./...
 
 # Build Linux binaries
 mkdir -p build
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-echo-test
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-echo-test
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-brainstorming
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-brainstorming
 ```
