@@ -13,8 +13,11 @@
 
 # Binaries / release output
 bin/
+build/
 dist/
 release/
+skills/**/bin/telegram-brainstorming-linux-amd64
+skills/**/bin/telegram-brainstorming-linux-arm64
 
 # Go tooling caches
 .coverprofile
