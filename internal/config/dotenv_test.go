@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -33,6 +34,22 @@ func TestLoadTelegramConfigFromEnvFile(t *testing.T) {
 	}
 	if cfg.ReplyTimeout != 4*time.Minute {
 		t.Fatalf("ReplyTimeout = %s, want %s", cfg.ReplyTimeout, 4*time.Minute)
+	}
+}
+
+func TestLoadTelegramConfigMissingEnvFileHasActionableMessage(t *testing.T) {
+	t.Parallel()
+
+	missing := filepath.Join(t.TempDir(), ".env")
+	_, err := LoadTelegramConfig(missing)
+	if err == nil {
+		t.Fatal("LoadTelegramConfig() error = nil, want non-nil")
+	}
+	if !strings.Contains(err.Error(), ".env.example") {
+		t.Fatalf("error = %q, want mention .env.example", err.Error())
+	}
+	if !strings.Contains(err.Error(), "创建对应的 .env 文件") {
+		t.Fatalf("error = %q, want creation hint", err.Error())
 	}
 }
 

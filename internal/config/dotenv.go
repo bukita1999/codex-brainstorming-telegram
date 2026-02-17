@@ -21,6 +21,9 @@ type TelegramConfig struct {
 func LoadTelegramConfig(path string) (TelegramConfig, error) {
 	f, err := os.Open(path)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return TelegramConfig{}, fmt.Errorf("%s 不存在，请根据 .env.example 创建对应的 .env 文件", path)
+		}
 		return TelegramConfig{}, fmt.Errorf("open env file: %w", err)
 	}
 	defer f.Close()
