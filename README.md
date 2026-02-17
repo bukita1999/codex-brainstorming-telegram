@@ -1,64 +1,6 @@
 # codex-brainstorming-telegram
 
-## 中文说明
-
-这是一个基于 Go 的 Telegram 文本验证与 brainstorming 技能打包项目。
-
-### 生成与许可声明
-
-- 本项目整体代码由 `Codex: GPT-5.3-Codex` 生成。
-- 本项目采用 `MIT` 许可证。
-
-### 主要内容
-
-- `cmd/telegram-echo-test`：向 Telegram 发送挑战消息并校验回包是否一致。
-- `cmd/telegram-brainstorming`：单轮 prompt->reply 桥接器（传入一段 A/B/C 文本到 Telegram，等待一条回复并输出结果）。
-- `skills/telegram-brainstorming/`：生产版 skill 文档（英文）与中文对照。
-- `instruction_for_AI.md`：指导 AI 构建、打包、安装完整 skill。
-
-### 平台支持
-
-- 仅支持：Linux `amd64` / `arm64`
-- 暂不支持：Windows / macOS
-
-### 配置
-
-根目录使用 `.env`：
-
-- `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_CHAT_ID`
-- `TELEGRAM_PROXY_URL`（可选）
-- `TELEGRAM_REPLY_TIMEOUT`（默认 `5m`）
-
-如果 `.env` 不存在，程序会提示你根据 `.env.example` 创建。
-
-### 常用命令
-
-```bash
-# 运行 Telegram 回环测试
-scripts/run_telegram_echo_test.sh
-
-# 运行单轮 Telegram brainstorming（--prompt 方式）
-GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "请选择方案：A) 稳健 B) 平衡 C) 激进。请回复 A/B/C 或补充说明。"
-
-# 运行单轮 Telegram brainstorming（位置参数方式）
-GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env "请选择方案：A) 稳健 B) 平衡 C) 激进。请回复 A/B/C 或补充说明。"
-
-# 运行单轮 Telegram brainstorming（\n 会被解释为真实换行）
-GOCACHE=/tmp/go-build go run ./cmd/telegram-brainstorming --env .env --prompt "请选择方案：\nA) 稳健\nB) 平衡\nC) 激进\n请回复 A/B/C。"
-
-# 全量测试
-GOCACHE=/tmp/go-build go test ./...
-
-# 构建 Linux 二进制
-mkdir -p build
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/telegram-brainstorming-linux-amd64 ./cmd/telegram-brainstorming
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o build/telegram-brainstorming-linux-arm64 ./cmd/telegram-brainstorming
-```
-
----
-
-## English
+Chinese version: [README.zh-CN.md](README.zh-CN.md)
 
 This is a Go-based project for Telegram text-path verification and brainstorming skill packaging.
 
@@ -79,18 +21,42 @@ This is a Go-based project for Telegram text-path verification and brainstorming
 - Supported only: Linux `amd64` / `arm64`
 - Not supported yet: Windows / macOS
 
-### Configuration
+### Quickstart
 
-Use `.env` in repository root:
+1. Install Go (recommended `1.25+`) and verify:
 
+```bash
+go version
+```
+
+2. Create `.env` from `.env.example`, then fill Telegram settings:
+
+```bash
+cp .env.example .env
+```
+
+Required:
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
-- `TELEGRAM_PROXY_URL` (optional)
-- `TELEGRAM_REPLY_TIMEOUT` (default `5m`)
+
+Optional:
+- `TELEGRAM_PROXY_URL`: set this only if you need a proxy (for example, many Mainland China network environments); otherwise leave it empty or remove the line.
+- `TELEGRAM_REPLY_TIMEOUT`: default `5m`.
 
 If `.env` is missing, the program prints an actionable hint to create it from `.env.example`.
 
-### Common commands
+3. Run one connectivity/integrity check first (manually reply with the same 6-digit code in Telegram):
+
+```bash
+scripts/run_telegram_echo_test.sh
+```
+
+4. Install the skill through your AI agent (`Codex` / `Claude Code` / `Opencode`):
+
+- ask the agent to read `instruction_for_AI.md`
+- example prompt: `Please follow instruction_for_AI.md to install this skill.`
+
+### Common commands (dev/debug)
 
 ```bash
 # Run Telegram echo test

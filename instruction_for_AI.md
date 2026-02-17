@@ -23,7 +23,6 @@ Create a new skill folder with this exact layout:
     telegram-brainstorming-linux-arm64
     .env
     .env.example
-    .env.examples
 ```
 
 ## Steps
@@ -32,11 +31,10 @@ Create a new skill folder with this exact layout:
 2. Create the target skill folder and `bin/` subfolder.
 3. Copy skill docs (`SKILL.md` and `SKILL.zh-CN.md`) into the skill root.
 4. Copy binaries into `bin/` and keep executable permissions.
-5. Copy `.env`, `.env.example`, and `.env.examples` into `bin/` (ensure all required variants exist).
-6. If the repository uses `.env.example` naming, copy it and also provide `.env.examples` as an alias.
-7. Pack the skill as an archive (for delivery and installation).
-8. If an old skill already exists at install target, remove it first, then unpack the new one.
-9. Verify installed files exist and executable permissions are correct.
+5. Copy `.env`, `.env.example`,into `bin/` (ensure all required variants exist).
+6. Pack the skill as an archive (for delivery and installation).
+7. If an old skill already exists at install target, remove it first, then unpack the new one.
+8. Verify installed files exist and executable permissions are correct.
 
 ## Build Commands (Reference)
 
@@ -65,12 +63,6 @@ if [ -f .env.example ]; then
 else
   echo ".env.example is required"
   exit 1
-fi
-
-if [ -f .env.examples ]; then
-  cp .env.examples "${PKG_DIR}/bin/.env.examples"
-else
-  cp .env.example "${PKG_DIR}/bin/.env.examples"
 fi
 
 chmod +x "${PKG_DIR}/bin/telegram-brainstorming-linux-amd64"
