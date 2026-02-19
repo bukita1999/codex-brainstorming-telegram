@@ -134,3 +134,10 @@
 ## 10. 下一步
 
 本设计文档已确定方向，后续仅进入 `writing-plans` 生成实施计划，不直接进入实现。
+
+## 11. 兼容性验证记录
+
+- 验证时间：2026-02-19T15:04:06+08:00
+- 验证命令：`scripts/run_telegram_brainstorming.sh --prompt "A/B/C test"`
+- 结果摘要：程序成功发送提问并收到 Telegram 回复 `B`，会话正常结束。
+- 兼容性结论：本次改造仅涉及 `brainstorming` skill 文案规范，不影响既有 Telegram 运行链路与交互通道约束。
